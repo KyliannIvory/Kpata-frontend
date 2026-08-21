@@ -34,21 +34,18 @@ lieux écrit quelque part plutôt que dans la tête de quelqu'un).
 | `app/lib/api-errors.ts` | ✅ fait | `groupFieldErrors(apiResponse: ApiErrorResponse)` regroupe `fieldErrors` par `field` en `Record<string, string[]>` (plusieurs messages possibles pour un même champ). Utilisé par `auth.ts` pour construire `AuthFormState.errors`. |
 | `app/actions/auth.ts` | ✅ fait | `login()`/`signup()` : validation Zod propre à chacun, puis délégation à une fonction privée commune `authenticateAndRedirect(url, body)` (fetch, mapping d'erreur via `ApiErrorResponse`/`groupFieldErrors`, vérification du `token`, `createSession()`, `redirect('/dashboard')`) — tous les `TODO(review-1/3/4)` et `TODO(map-errors)` sont résolus, `TODO(review-2)` (factorisation) traité par ce helper. `logout()` : appelle `POST /auth/logout` seulement si un `token` existe (`catch` silencieux si le backend est injoignable), puis `deleteSession()` + `redirect('/login')` dans tous les cas — `TODO(call-logout)` résolu. |
 | `app/lib/session.ts` | ✅ fait | `createSession()`/`getSession()`/`deleteSession()` tous écrits et fonctionnels. `TODO(review-1)` restant = robustesse (try/catch si token malformé), pas bloquant. |
-| `app/lib/dal.ts` | 🚧 en cours — **cassé tel quel** | Bascule faite vers l'option A (`verifySession()` appelle `GET /auth/me`, `getUser()` délègue à `verifySession()`). **`TODO(1)/(2)` à écrire dans `verifySession()`** (le `fetch` + le `return` du `UserDto`) — sans ça, `verifySession()` ne retourne rien, donc rien qui dépend de `dal.ts` ne peut fonctionner pour l'instant. |
+| `app/lib/dal.ts` | ✅ fait | `verifySession()` appelle `GET /auth/me` (`try/catch` + `!res.ok` → `redirect('/login')`) et retourne le `UserDto` parsé. `getUser()` délègue à `verifySession()`. |
 | `proxy.ts` | ⬜ à faire | Listes de routes déjà faites. **TODO(1)/(2)/(3) à écrire** (lecture cookie + redirections) — indépendant du reste, peut être fait à n'importe quel moment. |
 | `app/dashboard/page.tsx` | ⬜ à faire | **TODO(1)/(2)/(3) à écrire** (appel `verifySession()`/`getUser()`, affichage du `UserDto`, bouton logout). Attend que `dal.ts` soit fonctionnel avant de pouvoir être testé. |
 
 **Ordre retenu : d'abord les fichiers 🚧 en cours, puis les ⬜ à faire.**
 
-`app/actions/auth.ts` est maintenant ✅ fait (voir tableau ci-dessus) — reste :
+`app/actions/auth.ts` et `app/lib/dal.ts` sont maintenant ✅ faits (voir tableau
+ci-dessus) — reste :
 
-1. `app/lib/dal.ts` (🚧 en cours — cassé tel quel) — `TODO(1)`/`(2)` dans
-   `verifySession()`. Priorité : c'est le seul fichier actuellement **non
-   fonctionnel** (il ne retourne rien), et `getUser()`/`dashboard/page.tsx` en
-   dépendent directement.
-2. `proxy.ts` (⬜ à faire, jamais commencé) — `TODO(1)/(2)/(3)`.
-3. `app/dashboard/page.tsx` (⬜ à faire) — `TODO(1)/(2)/(3)`. En dernier : dépend de
-   `dal.ts` pour être réellement testable.
+1. `proxy.ts` (⬜ à faire, jamais commencé) — `TODO(1)/(2)/(3)`.
+2. `app/dashboard/page.tsx` (⬜ à faire) — `TODO(1)/(2)/(3)`. Peut maintenant être
+   testé de bout en bout puisque `dal.ts` est fonctionnel.
 
 Avant de commencer : `.env.local` a été créé à la racine avec
 `API_URL=http://localhost:8080` — lance ton backend Spring Boot en local pour pouvoir
@@ -129,8 +126,7 @@ Deux vérifications distinctes, volontairement :
 - **`dal.ts`** = l'endroit qui joue le rôle de
   `AuthenticationManager`/`SecurityContext` que tu interrogerais réellement dans un
   `@Service` — vérif solide, appelée seulement quand une page a vraiment besoin des
-  données utilisateur. `GET /auth/me` existe côté backend et renvoie le `UserDto`
-  complet : `verifySession()` doit l'appeler directement (voir `TODO(1)/(2)` et la
+  données utilisateur. `verifySession()` appelle directement `GET /auth/me` (voir la
   section dédiée plus bas) — ce n'est plus un décodage local du JWT, mais une vraie
   vérification côté serveur.
 
@@ -215,11 +211,9 @@ requête, pas de session serveur) : chaque appel à une route protégée doit po
 token dans le header `Authorization: Bearer <token>`, sinon Spring Security le traite
 comme anonyme.
 
-Concrètement, ça ne concerne encore aucun appel *écrit* dans ce squelette (le fetch de
-`GET /auth/me` reste à écrire dans `dal.ts`, `TODO(1)`), mais c'est le premier endroit où
-tu vas appliquer ce pattern. Retiens-le aussi pour plus tard, pour toute autre route
-protégée (ex: `/users/me`, ou n'importe quelle donnée métier) appelée depuis `dal.ts` ou
-une autre Server Action :
+`verifySession()` (`dal.ts`) applique déjà ce pattern pour `GET /auth/me`. Retiens-le
+aussi pour plus tard, pour toute autre route protégée (ex: `/users/me`, ou n'importe
+quelle donnée métier) appelée depuis `dal.ts` ou une autre Server Action :
 
 ```ts
 const token = await getSession()
@@ -424,14 +418,14 @@ chaque controller.
 `GET /auth/me` existe côté backend (`Authorization: Bearer <token>` → `UserDto
 { firstname, lastname, phoneNumber, email, roles }`, `roles` sérialisé comme un tableau
 de noms bruts de l'enum, ex. `["CUSTOMER"]`, valeurs possibles `CUSTOMER`/`PRO`/`ADMIN`)
-— **option A retenue** : `verifySession()` doit appeler CET endpoint à chaque fois
-(`TODO(1)/(2)`, encore à écrire), plutôt que de se contenter d'un décodage local du JWT.
-C'est une vraie vérification côté serveur : un token expiré, corrompu, ou blacklisté
-après un logout (le décodage local ne pouvait détecter aucun des trois cas) est rejeté
-par le backend lui-même. `app/lib/jwt.ts` (décodage local) n'est donc plus utilisé ici —
-il reste utile uniquement à `session.ts` (calcul de la date d'expiration du cookie). Pas
-de rate limiting côté backend sur cette route, donc pas de coût réseau à anticiper même
-si `verifySession()` est appelée à chaque visite de page protégée.
+— **option A retenue** : `verifySession()` appelle CET endpoint à chaque fois, plutôt
+que de se contenter d'un décodage local du JWT. C'est une vraie vérification côté
+serveur : un token expiré, corrompu, ou blacklisté après un logout (le décodage local ne
+pouvait détecter aucun des trois cas) est rejeté par le backend lui-même. `app/lib/jwt.ts`
+(décodage local) n'est donc plus utilisé ici — il reste utile uniquement à `session.ts`
+(calcul de la date d'expiration du cookie). Pas de rate limiting côté backend sur cette
+route, donc pas de coût réseau à anticiper même si `verifySession()` est appelée à chaque
+visite de page protégée.
 
 `cache()` (une fonction de React, pas de Next.js) mémorise le résultat **pour la durée
 d'un seul rendu de page** : si plusieurs composants de la même page appellent
