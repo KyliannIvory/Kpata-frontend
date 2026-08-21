@@ -35,17 +35,16 @@ lieux écrit quelque part plutôt que dans la tête de quelqu'un).
 | `app/actions/auth.ts` | ✅ fait | `login()`/`signup()` : validation Zod propre à chacun, puis délégation à une fonction privée commune `authenticateAndRedirect(url, body)` (fetch, mapping d'erreur via `ApiErrorResponse`/`groupFieldErrors`, vérification du `token`, `createSession()`, `redirect('/dashboard')`) — tous les `TODO(review-1/3/4)` et `TODO(map-errors)` sont résolus, `TODO(review-2)` (factorisation) traité par ce helper. `logout()` : appelle `POST /auth/logout` seulement si un `token` existe (`catch` silencieux si le backend est injoignable), puis `deleteSession()` + `redirect('/login')` dans tous les cas — `TODO(call-logout)` résolu. |
 | `app/lib/session.ts` | ✅ fait | `createSession()`/`getSession()`/`deleteSession()` tous écrits et fonctionnels. `TODO(review-1)` restant = robustesse (try/catch si token malformé), pas bloquant. |
 | `app/lib/dal.ts` | ✅ fait | `verifySession()` appelle `GET /auth/me` (`try/catch` + `!res.ok` → `redirect('/login')`) et retourne le `UserDto` parsé. `getUser()` délègue à `verifySession()`. |
-| `proxy.ts` | ⬜ à faire | Listes de routes déjà faites. **TODO(1)/(2)/(3) à écrire** (lecture cookie + redirections) — indépendant du reste, peut être fait à n'importe quel moment. |
+| `proxy.ts` | ✅ fait | Lit `req.cookies.get('session')` : redirige vers `/login` si route protégée sans cookie, vers `/dashboard` si route publique avec cookie. `'/'` est dans `publicRoutes` — à exclure de cette redirection le jour où `/` devient une vraie page d'accueil consultable même connecté (`app/page.tsx` est encore le placeholder par défaut de Next.js). |
 | `app/dashboard/page.tsx` | ⬜ à faire | **TODO(1)/(2)/(3) à écrire** (appel `verifySession()`/`getUser()`, affichage du `UserDto`, bouton logout). Attend que `dal.ts` soit fonctionnel avant de pouvoir être testé. |
 
 **Ordre retenu : d'abord les fichiers 🚧 en cours, puis les ⬜ à faire.**
 
-`app/actions/auth.ts` et `app/lib/dal.ts` sont maintenant ✅ faits (voir tableau
-ci-dessus) — reste :
+`app/actions/auth.ts`, `app/lib/dal.ts` et `proxy.ts` sont maintenant ✅ faits (voir
+tableau ci-dessus) — reste :
 
-1. `proxy.ts` (⬜ à faire, jamais commencé) — `TODO(1)/(2)/(3)`.
-2. `app/dashboard/page.tsx` (⬜ à faire) — `TODO(1)/(2)/(3)`. Peut maintenant être
-   testé de bout en bout puisque `dal.ts` est fonctionnel.
+1. `app/dashboard/page.tsx` (⬜ à faire) — `TODO(1)/(2)/(3)`. Peut maintenant être
+   testé de bout en bout puisque `dal.ts` et `proxy.ts` sont fonctionnels.
 
 Avant de commencer : `.env.local` a été créé à la racine avec
 `API_URL=http://localhost:8080` — lance ton backend Spring Boot en local pour pouvoir
