@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# kpata
+
+Réservation de salons beauté & bien-être pour le marché ivoirien. Frontend
+[Next.js](https://nextjs.org) (App Router), qui s'appuie sur un backend Spring
+Boot séparé pour l'authentification et les données métier. L'authentification
+se fait par **numéro de téléphone**, pas par email — décision produit pour le
+marché ivoirien.
+
+## État actuel
+
+Le squelette d'authentification est terminé :
+
+- **Connexion / inscription** (`/login`, `/signup`) — formulaires validés
+  (Zod), erreurs mappées depuis le contrat d'erreur du backend
+  (`ErrorResponseDto`), session posée dans un cookie `httpOnly`.
+- **Déconnexion** — invalide le token côté backend puis nettoie la session
+  locale.
+- **Protection des routes** — un premier contrôle rapide (présence du cookie,
+  `proxy.ts`) puis une vérification réelle côté serveur avant d'afficher une
+  page protégée (`GET /auth/me`, `app/lib/dal.ts`).
+- **Dashboard** (`/dashboard`) — affiche les infos du compte connecté
+  (nom, téléphone, email, rôles) et le bouton de déconnexion.
+- **Design** — l'identité visuelle "Modernist" (Archivo, rouge unique, coins
+  adoucis) est appliquée aux pages ci-dessus.
+
+Ce qui dépasse ce périmètre (réservations, profils pro, etc.) n'existe pas
+encore.
+
+Pour le détail fichier par fichier (rôle de chaque fichier, contrat d'erreur
+du backend, décisions prises), voir [`docs/auth-architecture.md`](docs/auth-architecture.md).
+Pour le design de référence, voir [`docs/design/`](docs/design/).
 
 ## Getting Started
 
-First, run the development server:
+Ce projet a besoin d'un backend Spring Boot qui tourne à côté (routes
+`/auth/login`, `/auth/signup`, `/auth/logout`, `/auth/me`).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. Crée un fichier `.env.local` à la racine avec l'URL de ce backend :
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+   ```
+   API_URL=http://localhost:8080
+   ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+2. Lance le serveur de développement :
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   ```bash
+   npm run dev
+   ```
 
-## Learn More
+3. Ouvre [http://localhost:3000](http://localhost:3000).
 
-To learn more about Next.js, take a look at the following resources:
+## Compte de test
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Le backend n'a pas de données de seed — ce compte a été créé à la main (via
+`POST /auth/signup`) pour tester rapidement sans repasser par `/signup` :
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Champ | Valeur |
+|---|---|
+| Téléphone | `0701020304` |
+| Mot de passe | `password123` |
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Connecte-toi directement via [`/login`](http://localhost:3000/login). Ce
+compte vit dans la base locale du backend : s'il est réinitialisé, recrée-le
+via [`/signup`](http://localhost:3000/signup) avec ces mêmes valeurs (prénom
+Aïcha, nom Koné, email `aicha@example.com`).

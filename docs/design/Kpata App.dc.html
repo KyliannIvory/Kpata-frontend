@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+  <link rel="stylesheet" href="_ds/modernist-a681a27c-881c-4c89-8fa9-475280ac599e/styles.css">
+  <script src="_ds/modernist-a681a27c-881c-4c89-8fa9-475280ac599e/_ds_bundle.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body{margin:0}
+    .frame{width:390px;height:844px;border-radius:28px;border:1px solid var(--color-neutral-300);background:var(--color-bg);display:flex;flex-direction:column;overflow:hidden;flex:none;box-shadow:var(--shadow-lg)}
+    .scroll{flex:1;overflow-y:auto}
+    .scroll::-webkit-scrollbar{display:none}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid var(--color-neutral-300);flex:none}
+    .wordmark{font-family:var(--font-heading);font-weight:800;font-size:20px;letter-spacing:-0.02em;display:flex;align-items:center;gap:8px}
+    .mark{width:14px;height:14px;border-radius:4px;background:var(--color-accent)}
+    .bottomnav{display:flex;border-top:1px solid var(--color-neutral-300);flex:none;padding:6px 8px}
+    .navitem{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;font-size:11px;color:var(--color-neutral-600);border-radius:14px}
+    .navitem.active{color:var(--color-accent-700);background:var(--color-accent-100)}
+    .salon-card{background:var(--color-neutral-100);border-radius:18px;padding:12px;margin-bottom:20px;box-shadow:var(--shadow-sm)}
+    .cat-card{flex:none;width:108px;border-radius:16px;background:var(--color-neutral-100);padding:14px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow-sm)}
+    label.field-label{display:block;font-size:12px;margin-bottom:5px;color:color-mix(in srgb, var(--color-text) 70%, transparent)}
+    .fname{font-family:var(--font-heading);font-weight:800}
+    .frame .btn{border-radius:12px}
+    .frame .input{border-radius:12px;border-color:var(--color-neutral-300);background:var(--color-neutral-100)}
+    .frame .tag{border-radius:999px;padding:4px 12px}
+    .frame img.grayscale{border-radius:16px}
+    .frame .seg{border-radius:12px;border-color:var(--color-neutral-300)}
+    .frame .seg-opt+.seg-opt{border-color:var(--color-neutral-300)}
+    .frame .card{border-radius:16px;box-shadow:var(--shadow-sm);border:none !important}
+    .frame hr.hr{background:var(--color-neutral-300)}
+  </style>
+</helmet>
+
+<div style="background:var(--color-bg);min-height:100vh;padding:48px 32px;font-family:var(--font-body);color:var(--color-text)">
+  <div style="max-width:1280px;margin:0 auto 40px">
+    <h6 style="color:var(--color-neutral-700)">Refonte — Design Components</h6>
+    <h1 style="margin-bottom:8px">kpata</h1>
+    <p style="max-width:560px;opacity:0.75">Réservation de salons beauté &amp; bien-être pour le marché ivoirien. Archivo, rouge unique, coins adoucis et ombres légères — une interface épurée et élégante.</p>
+  </div>
+
+  <div style="display:flex;gap:32px;flex-wrap:wrap;align-items:flex-start;max-width:1280px;margin:0 auto">
+
+    <!-- SCREEN 1: ACCUEIL CLIENT -->
+    <div>
+      <h6 style="margin-bottom:12px;color:var(--color-neutral-700)">01 — Accueil client</h6>
+      <div class="frame">
+        <div class="topbar">
+          <div class="wordmark"><span class="mark"></span>kpata</div>
+          <button class="btn btn-secondary" style="font-size:12px">Passer Pro</button>
+        </div>
+        <div class="scroll" style="padding:20px">
+          <h2 style="margin-bottom:4px">Bonjour, Aïcha</h2>
+          <p style="opacity:0.7;margin-bottom:20px">Trouvez votre prochain moment de beauté à Abidjan.</p>
+
+          <div style="position:relative;margin-bottom:24px">
+            <i data-lucide="search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--color-neutral-700)"></i>
+            <input class="input" style="padding-left:36px;padding-right:44px" placeholder="Salon, prestation, styliste…">
+            <button class="btn btn-primary btn-icon" style="position:absolute;right:2px;top:2px;height:calc(100% - 4px)"><i data-lucide="sliders-horizontal" style="width:15px;height:15px"></i></button>
+          </div>
+
+          <h4 style="margin-bottom:12px">Catégories</h4>
+          <div style="display:flex;gap:10px;overflow-x:auto;margin-bottom:28px;padding-bottom:4px">
+            <div class="cat-card"><i data-lucide="scissors" style="width:18px;height:18px;color:var(--color-accent)"></i><div><div class="fname" style="font-size:13px">Coiffure</div><div style="font-size:11px;opacity:0.6">32 salons</div></div></div>
+            <div class="cat-card"><i data-lucide="git-branch" style="width:18px;height:18px;color:var(--color-accent)"></i><div><div class="fname" style="font-size:13px">Tresses &amp; Locks</div><div style="font-size:11px;opacity:0.6">41 salons</div></div></div>
+            <div class="cat-card"><i data-lucide="hand" style="width:18px;height:18px;color:var(--color-accent)"></i><div><div class="fname" style="font-size:13px">Onglerie</div><div style="font-size:11px;opacity:0.6">19 salons</div></div></div>
+            <div class="cat-card"><i data-lucide="sparkles" style="width:18px;height:18px;color:var(--color-accent)"></i><div><div class="fname" style="font-size:13px">Soins visage</div><div style="font-size:11px;opacity:0.6">14 salons</div></div></div>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px">
+            <h4 style="margin:0">À la une</h4>
+            <a href="#" style="font-size:12px">Voir tout</a>
+          </div>
+
+          <div class="salon-card">
+            <div style="position:relative;height:150px;margin-bottom:10px">
+              <img class="grayscale" style="width:100%;height:100%;object-fit:cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGf31vf8nGFvv1bumBRdId06gVm4Vn1SPMu-HbJJYrLHDqhdiQiabE59IrsqRqdvsZDxOKEPdS6JjBrDyW_CJdYOEmj95omG7-6xAZwLojGQmAr3DzY0p63pftUlSNjYXdjdgPm3_-7ni0MJY29cT_QyeKMri3WJFYRUaZrJAe0nCAfg4TvbCGGMVozrkVBQvGWPhfzsu9FGEdiwGBIeNchfglBbUjLv99EHsV9FKO16HoGOgUa2j4">
+              <span class="tag tag-accent" style="position:absolute;top:8px;right:8px;background:var(--color-bg)">★ 4.9</span>
+            </div>
+            <div style="display:flex;justify-content:space-between"><span class="fname">Studio Adjoua</span><span class="fname" style="font-size:13px">Dès 15 000 F</span></div>
+            <p style="font-size:13px;opacity:0.7;margin:2px 0 6px">Coiffure &amp; Tresses</p>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;opacity:0.6"><i data-lucide="map-pin" style="width:13px;height:13px"></i>Cocody · 1.2 km</div>
+          </div>
+
+          <div class="salon-card">
+            <div style="position:relative;height:150px;margin-bottom:10px">
+              <img class="grayscale" style="width:100%;height:100%;object-fit:cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgxyDkqwAMZiM-NOITzuiQi7trVp6E3Mjca8Y5eJEh9LQbJscSyLiFtspRrxTAymNBi5ekk2j10wv7zRsDOTbaTzRYHbzCxPlN8pmzgEn85Eqs7BorGDl_nYod8NA6Y529-ACiVvuZrCPw52usGXeVuzasmDBGCUz7GSJEYqgo5IS1lKpw91k_wCdLvwUXGmGB17DwKGdVeXY5TPtVpTg7s0veoaqQRIfIeslubW6G5yW8tD2JPKT8">
+              <span class="tag tag-accent" style="position:absolute;top:8px;right:8px;background:var(--color-bg)">★ 4.8</span>
+            </div>
+            <div style="display:flex;justify-content:space-between"><span class="fname">Le Salon Ivoire</span><span class="fname" style="font-size:13px">Dès 25 000 F</span></div>
+            <p style="font-size:13px;opacity:0.7;margin:2px 0 6px">Spa &amp; Bien-être</p>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;opacity:0.6"><i data-lucide="map-pin" style="width:13px;height:13px"></i>Plateau · 2.5 km</div>
+          </div>
+
+          <div class="salon-card" style="margin-bottom:0">
+            <div style="position:relative;height:150px;margin-bottom:10px">
+              <img class="grayscale" style="width:100%;height:100%;object-fit:cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuun9MzD4kfFJL_Wl2tU-k6cNUN--qRbjFF3ihIRRXa9dsTsGJEPeh3beByF35ruVrlIJ-FeVqRrgEbPTboRCcxGR-aG1AxmppXpMR2N93w_pK4UDaDNeHo3qcUp0w2VvqL4o7G2wxWAKA5nCoY9N2Knbv8V2njr7UQvxT9OjuhQ6jJxL-iNxFZKYQj5xxCyAXAmKJDV4N8Zm4WVqS1qdEByir9pkwke41dVWAW643YI96Uj6e04MB">
+              <span class="tag tag-accent" style="position:absolute;top:8px;right:8px;background:var(--color-bg)">★ 5.0</span>
+            </div>
+            <div style="display:flex;justify-content:space-between"><span class="fname">Nails by Fatou</span><span class="fname" style="font-size:13px">Dès 8 000 F</span></div>
+            <p style="font-size:13px;opacity:0.7;margin:2px 0 6px">Onglerie</p>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;opacity:0.6"><i data-lucide="map-pin" style="width:13px;height:13px"></i>Riviera · 0.8 km</div>
+          </div>
+        </div>
+        <div class="bottomnav">
+          <div class="navitem active"><i data-lucide="home" style="width:19px;height:19px"></i>Accueil</div>
+          <div class="navitem"><i data-lucide="search" style="width:19px;height:19px"></i>Recherche</div>
+          <div class="navitem"><i data-lucide="calendar" style="width:19px;height:19px"></i>Réservations</div>
+          <div class="navitem"><i data-lucide="user" style="width:19px;height:19px"></i>Profil</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: DETAIL SALON / RESERVATION -->
+    <div>
+      <h6 style="margin-bottom:12px;color:var(--color-neutral-700)">02 — Détail salon &amp; réservation</h6>
+      <div class="frame">
+        <div class="scroll">
+          <div style="position:relative;height:220px">
+            <img class="grayscale" style="width:100%;height:100%;object-fit:cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGf31vf8nGFvv1bumBRdId06gVm4Vn1SPMu-HbJJYrLHDqhdiQiabE59IrsqRqdvsZDxOKEPdS6JjBrDyW_CJdYOEmj95omG7-6xAZwLojGQmAr3DzY0p63pftUlSNjYXdjdgPm3_-7ni0MJY29cT_QyeKMri3WJFYRUaZrJAe0nCAfg4TvbCGGMVozrkVBQvGWPhfzsu9FGEdiwGBIeNchfglBbUjLv99EHsV9FKO16HoGOgUa2j4">
+            <button class="btn btn-icon" style="position:absolute;top:12px;left:12px;background:var(--color-bg)"><i data-lucide="arrow-left" style="width:16px;height:16px"></i></button>
+          </div>
+          <div style="padding:20px">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+              <h3 style="margin:0">Studio Adjoua</h3>
+              <span class="tag tag-accent">★ 4.9</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;opacity:0.65;margin-bottom:16px"><i data-lucide="map-pin" style="width:13px;height:13px"></i>Boulevard Latrille, Cocody · 1.2 km</div>
+
+            <div class="seg" style="margin-bottom:20px">
+              <label class="seg-opt"><input type="radio" name="tab" checked><span>Services</span></label>
+              <label class="seg-opt"><input type="radio" name="tab"><span>Avis</span></label>
+              <label class="seg-opt"><input type="radio" name="tab"><span>Infos</span></label>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--color-neutral-200)">
+              <div><div class="fname" style="font-size:14px">Brushing &amp; Coiffage</div><div style="font-size:12px;opacity:0.6">45 min</div></div>
+              <div style="display:flex;align-items:center;gap:12px"><span class="fname" style="font-size:13px">15 000 F</span><button class="btn btn-secondary" style="font-size:12px">Choisir</button></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--color-neutral-200)">
+              <div><div class="fname" style="font-size:14px">Box Braids</div><div style="font-size:12px;opacity:0.6">3h30</div></div>
+              <div style="display:flex;align-items:center;gap:12px"><span class="fname" style="font-size:13px">35 000 F</span><button class="btn btn-primary" style="font-size:12px">Choisi ✓</button></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;margin-bottom:20px">
+              <div><div class="fname" style="font-size:14px">Coloration</div><div style="font-size:12px;opacity:0.6">1h30</div></div>
+              <div style="display:flex;align-items:center;gap:12px"><span class="fname" style="font-size:13px">20 000 F</span><button class="btn btn-secondary" style="font-size:12px">Choisir</button></div>
+            </div>
+
+            <h4 style="margin-bottom:10px">Créneau</h4>
+            <div style="display:flex;gap:8px;margin-bottom:24px">
+              <button class="btn btn-secondary" style="flex:1">Jeu. 21</button>
+              <button class="btn btn-primary" style="flex:1">Ven. 22</button>
+              <button class="btn btn-secondary" style="flex:1">Sam. 23</button>
+            </div>
+
+            <h4 style="margin-bottom:10px">Paiement</h4>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px">
+              <span class="tag tag-accent">Orange Money</span>
+              <span class="tag tag-outline">MTN MoMo</span>
+              <span class="tag tag-outline">Wave</span>
+              <span class="tag tag-outline">Moov Money</span>
+              <span class="tag tag-outline">Espèces au salon</span>
+            </div>
+          </div>
+        </div>
+        <div style="border-top:1px solid var(--color-neutral-300);padding:18px 24px;flex:none">
+          <button class="btn btn-primary" style="width:100%;justify-content:space-between;padding:14px 16px">
+            <span>Confirmer la réservation</span><span>35 000 F</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: DASHBOARD PRO -->
+    <div>
+      <h6 style="margin-bottom:12px;color:var(--color-neutral-700)">03 — Tableau de bord pro</h6>
+      <div class="frame">
+        <div class="topbar">
+          <div class="wordmark"><span class="mark"></span>kpata</div>
+          <span class="tag tag-accent">Mode Pro</span>
+        </div>
+        <div class="scroll" style="padding:20px">
+          <h2 style="margin-bottom:4px">Bonjour, Adjoua</h2>
+          <p style="opacity:0.7;margin-bottom:16px">3 rendez-vous prévus aujourd'hui.</p>
+          <button class="btn btn-primary" style="margin-bottom:20px"><i data-lucide="plus" style="width:14px;height:14px"></i>Nouvelle réservation</button>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center"><h6 style="margin:0;color:var(--color-neutral-700)">Revenus du jour</h6><i data-lucide="banknote" style="width:16px;height:16px;color:var(--color-accent)"></i></div>
+              <div style="font-family:var(--font-heading);font-weight:800;font-size:26px">85 000 F</div>
+              <div style="font-size:12px;color:var(--color-accent-700);display:flex;align-items:center;gap:4px"><i data-lucide="trending-up" style="width:12px;height:12px"></i>+12% vs hier</div>
+            </div>
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center"><h6 style="margin:0;color:var(--color-neutral-700)">Réservations</h6><i data-lucide="calendar-check" style="width:16px;height:16px;color:var(--color-accent)"></i></div>
+              <div style="font-family:var(--font-heading);font-weight:800;font-size:26px">8</div>
+              <div style="font-size:12px;opacity:0.6">3 en attente</div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:24px">
+            <h4 style="margin-bottom:4px">Statut Pro</h4>
+            <p style="font-size:13px;opacity:0.75;margin-bottom:10px">Profil complété à 85%. Ajoutez des photos de votre studio.</p>
+            <div style="width:100%;height:6px;background:var(--color-neutral-300)"><div style="width:85%;height:100%;background:var(--color-accent)"></div></div>
+            <button class="btn btn-secondary btn-block">Compléter le profil</button>
+          </div>
+
+          <h4 style="margin-bottom:10px">Agenda du jour</h4>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--color-neutral-200)">
+            <div style="display:flex;align-items:center;gap:12px"><span class="fname" style="font-size:13px;width:42px">10:00</span><div><div class="fname" style="font-size:13px">Box Braids</div><div style="font-size:12px;opacity:0.6">Aïcha Koné</div></div></div>
+            <span class="tag tag-accent">Confirmé</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--color-neutral-200)">
+            <div style="display:flex;align-items:center;gap:12px"><span class="fname" style="font-size:13px;width:42px">14:30</span><div><div class="fname" style="font-size:13px">Brushing</div><div style="font-size:12px;opacity:0.6">Marc Kouassi</div></div></div>
+            <span class="tag tag-outline">En attente</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0">
+            <div style="display:flex;align-items:center;gap:12px"><span class="fname" style="font-size:13px;width:42px">16:00</span><div><div class="fname" style="font-size:13px">Coloration</div><div style="font-size:12px;opacity:0.6">Sophie Bamba</div></div></div>
+            <span class="tag tag-accent">Confirmé</span>
+          </div>
+        </div>
+        <div class="bottomnav">
+          <div class="navitem active"><i data-lucide="home" style="width:19px;height:19px"></i>Accueil</div>
+          <div class="navitem"><i data-lucide="calendar" style="width:19px;height:19px"></i>Agenda</div>
+          <div class="navitem"><i data-lucide="bar-chart-2" style="width:19px;height:19px"></i>Stats</div>
+          <div class="navitem"><i data-lucide="user" style="width:19px;height:19px"></i>Profil</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 4: CONNEXION -->
+    <div>
+      <h6 style="margin-bottom:12px;color:var(--color-neutral-700)">04 — Connexion</h6>
+      <div class="frame">
+        <div class="scroll" style="padding:32px 24px;display:flex;flex-direction:column;justify-content:center;min-height:100%">
+          <div class="wordmark" style="font-size:22px;margin-bottom:32px"><span class="mark"></span>kpata</div>
+          <h2 style="margin-bottom:6px">Content de vous revoir</h2>
+          <p style="opacity:0.7;margin-bottom:28px">Connectez-vous pour réserver votre prochain rendez-vous.</p>
+
+          <div class="field" style="margin-bottom:16px">
+            <label>Numéro de téléphone</label>
+            <input class="input" placeholder="+225 07 00 00 00 00">
+          </div>
+          <div class="field" style="margin-bottom:8px">
+            <label>Mot de passe</label>
+            <input class="input" type="password" placeholder="Votre mot de passe">
+          </div>
+          <div style="text-align:right;margin-bottom:20px"><a href="#" style="font-size:12px">Mot de passe oublié ?</a></div>
+
+          <button class="btn btn-primary btn-block" style="margin-top:0">Se connecter</button>
+          <hr class="hr">
+          <p style="text-align:center;font-size:13px;opacity:0.75;margin:0">Pas encore de compte ? <a href="#">Créer un compte</a></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 5: INSCRIPTION -->
+    <div>
+      <h6 style="margin-bottom:12px;color:var(--color-neutral-700)">05 — Inscription</h6>
+      <div class="frame">
+        <div class="scroll" style="padding:32px 24px">
+          <div class="wordmark" style="font-size:22px;margin-bottom:28px"><span class="mark"></span>kpata</div>
+          <h2 style="margin-bottom:6px">Créer un compte</h2>
+          <p style="opacity:0.7;margin-bottom:24px">Commencez votre expérience kpata dès aujourd'hui.</p>
+
+          <div class="field" style="margin-bottom:14px">
+            <label>Nom complet</label>
+            <input class="input" placeholder="Aïcha Koné">
+          </div>
+          <div class="field" style="margin-bottom:14px">
+            <label>Numéro de téléphone</label>
+            <input class="input" placeholder="+225 07 00 00 00 00">
+          </div>
+          <div class="field" style="margin-bottom:6px">
+            <label>Mot de passe</label>
+            <input class="input" type="password" placeholder="8 caractères minimum">
+          </div>
+          <p style="font-size:11px;opacity:0.55;margin-bottom:20px">Doit contenir au moins 8 caractères.</p>
+
+          <button class="btn btn-primary btn-block" style="margin-top:0;justify-content:space-between">Créer mon compte<i data-lucide="arrow-right" style="width:14px;height:14px"></i></button>
+
+          <p style="font-size:11px;opacity:0.55;text-align:center;margin:16px 0 0">En continuant, vous acceptez les <a href="#">conditions d'utilisation</a>.</p>
+          <hr class="hr">
+          <p style="text-align:center;font-size:13px;opacity:0.75;margin:0">Déjà un compte ? <a href="#">Se connecter</a></p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  componentDidMount() {
+    if (window.lucide) window.lucide.createIcons();
+  }
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

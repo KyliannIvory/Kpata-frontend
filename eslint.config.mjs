@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Reference design canvas (vendored viewer scripts, not app code).
+    "docs/design/**",
   ]),
 ]);
 
