@@ -472,9 +472,13 @@ Lorsque pertinent, indique :
 * si le changement pourrait être séparé en plusieurs commits ;
 * quel pourrait être le message de commit.
 
-Ne fais pas de `git commit`, `git push`, rebase ou opération destructive sans demande explicite.
+**Jamais automatiquement** : `commit`, `push`, rebase, reset, force push, réécriture d'historique — nécessitent ma demande explicite.
 
-Ne supprime ou ne réécris pas l'historique Git sans mon accord explicite.
+### Convention de messages de commit
+
+En anglais, concis (titre court, corps si nécessaire).
+
+**Jamais** de mention de l'assistant : pas de `Co-Authored-By`, pas de "Generated with Claude" ou équivalent.
 
 ---
 
