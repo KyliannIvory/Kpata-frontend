@@ -4,7 +4,7 @@ export default function AuthLayout({ children }: LayoutProps<'/'>) {
 
         <div className="flex min-h-full items-center justify-center p-8">
 
-            <div className="w-full max-w-sm rounded-lg border border-[var(--border)] bg-[var(--background)] p-6 shadow-sm">
+            <div className="w-full max-w-sm rounded-[var(--radius-lg)] bg-[var(--color-neutral-100)] p-8 shadow-[var(--shadow-md)]">
                 {children}
             </div>
 

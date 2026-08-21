@@ -14,6 +14,7 @@ export default function SignupForm() {
             label="Prénom"
             id="firstname"
             name="firstname"
+            placeholder="Aïcha"
             required
             errors={state?.errors?.firstname}
         />
@@ -22,6 +23,7 @@ export default function SignupForm() {
             label="Nom"
             id="lastname"
             name="lastname"
+            placeholder="Koné"
             required
             errors={state?.errors?.lastname}
         />
@@ -31,7 +33,7 @@ export default function SignupForm() {
             id="phoneNumber"
             name="phoneNumber"
             type="tel"
-            placeholder="0701020304"
+            placeholder="+225 07 00 00 00 00"
             errors={state?.errors?.phoneNumber}
             required
         />
@@ -41,23 +43,32 @@ export default function SignupForm() {
             id="email"
             name="email"
             type="email"
+            placeholder="aicha@example.com"
             errors={state?.errors?.email}
         />
 
-        <FormField
-            label="Mot de passe"
-            id="password"
-            name="password"
-            type="password"
-            errors={state?.errors?.password}
-            required
-        />
+        <div className="flex flex-col gap-1">
+          <FormField
+              label="Mot de passe"
+              id="password"
+              name="password"
+              type="password"
+              placeholder="8 caractères minimum"
+              errors={state?.errors?.password}
+              required
+          />
+          <p className="text-muted">Doit contenir au moins 8 caractères.</p>
+        </div>
 
-        {state?.message && (<p> {state.message} </p>)}
+        {state?.message && (<p className="field-error">{state.message}</p>)}
 
-      <button type="submit" disabled={pending}>
-        {pending ? 'Création du compte...' : "S'inscrire"}
+      <button type="submit" className="btn btn-primary btn-block" disabled={pending}>
+        {pending ? 'Création du compte...' : 'Créer mon compte'}
       </button>
+
+      <p className="text-muted text-center">
+        En continuant, vous acceptez les conditions d&apos;utilisation.
+      </p>
 
     </form>
   )

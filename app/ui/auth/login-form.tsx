@@ -15,7 +15,7 @@ export default function LoginForm() {
           id="phoneNumber"
           name="phoneNumber"
           type="tel"
-          placeholder="0701020304"
+          placeholder="+225 07 00 00 00 00"
           required
           errors={state?.errors?.phoneNumber}
         />
@@ -25,13 +25,14 @@ export default function LoginForm() {
             id="password"
             name="password"
             type="password"
+            placeholder="Votre mot de passe"
             required
             errors={state?.errors?.password}
         />
 
-        {state?.message && (<p> {state.message} </p>)}
+        {state?.message && (<p className="field-error">{state.message}</p>)}
 
-      <button type="submit" disabled={pending}>
+      <button type="submit" className="btn btn-primary btn-block" disabled={pending}>
         {pending ? 'Connexion...' : 'Se connecter'}
       </button>
     </form>

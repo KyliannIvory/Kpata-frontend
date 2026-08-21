@@ -20,13 +20,12 @@ export default function FormField({
 
 
   return (
-      <>
-        <label htmlFor={id}> {label} </label>
-        <input id={id} name={name} type={type} placeholder={placeholder} required={required} />
-        {errors && ( errors.map((error) => (
-                <p key={error}> {error} </p>
-            ))
-        )}
-      </>
+      <div className="field">
+        <label htmlFor={id}>{label}</label>
+        <input className="input" id={id} name={name} type={type} placeholder={placeholder} required={required} />
+        {errors && errors.map((error) => (
+          <p key={error} className="field-error">{error}</p>
+        ))}
+      </div>
   )
 }
