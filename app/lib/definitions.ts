@@ -1,8 +1,6 @@
 import * as z from 'zod'
 import {isValidPhoneNumber} from  'libphonenumber-js'
 
-
-
 export const LoginFormSchema = z.object({
   phoneNumber: z.string().refine((v) => isValidPhoneNumber(v, 'CI'), {
       error: 'Invalid phone number',
@@ -56,3 +54,15 @@ export type AuthFormState =
       message?: string
     }
   | undefined
+
+export type ApiErrorResponse =
+    {
+        timestamp: string,
+        status: number,
+        error: string,
+        message: string,
+        path: string,
+        fieldErrors: ApiFieldError[]
+    };
+
+type ApiFieldError = {field: string, message: string}
