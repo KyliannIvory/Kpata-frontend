@@ -511,6 +511,13 @@ La documentation doit expliquer principalement :
 
 Évite de documenter uniquement ce que le code montre déjà clairement.
 
+### Mise à jour au fil de l'eau
+
+Dès qu'un TODO est résolu, mets à jour dans la foulée, sans attendre qu'on te le demande :
+
+* le tableau de suivi de `docs/auth-architecture.md` ;
+* la documentation dans le fichier concerné lui-même — de façon concise (pas de tutoriel, juste le pourquoi non évident).
+
 ---
 
 # 21. Format de réponse préféré
