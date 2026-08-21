@@ -23,13 +23,13 @@ lieux écrit quelque part plutôt que dans la tête de quelqu'un).
 | Fichier | Statut | Où j'en suis exactement |
 |---|---|---|
 | `app/lib/definitions.ts` | ✅ fait | Schémas écrits et fonctionnels. Le `TODO(normalize-phone)` a été retiré le 2026-08-18 : le backend normalise maintenant lui-même vers E.164 (voir "Limites connues actuelles du backend" plus bas), donc plus besoin d'un `.transform()` côté frontend pour garantir un compte unique. Ajouté le 2026-08-21 : `ApiErrorResponse`/`ApiFieldError`, le miroir TypeScript de l'`ErrorResponseDto` backend, utilisé par `app/lib/api-errors.ts` et `app/actions/auth.ts` pour typer la réponse d'erreur avant mapping. |
-| `app/ui/auth/form-field.tsx` | ✅ fait | Composant réutilisable extrait pour éviter la duplication label+input+erreurs. Affiche déjà plusieurs erreurs par champ (tableau) — pas de changement à faire même une fois `fieldErrors` mappé. |
-| `app/ui/auth/login-form.tsx` | ✅ fait | Utilise `FormField` pour phoneNumber/password |
-| `app/ui/auth/signup-form.tsx` | ✅ fait | Utilise `FormField` pour les 5 champs |
-| `app/(auth)/layout.tsx` | ✅ fait | Carte centrée (design) |
-| `app/(auth)/login/page.tsx` | ✅ fait | Titre + `LoginForm` + lien vers `/signup` |
-| `app/(auth)/signup/page.tsx` | ✅ fait | Titre + `SignupForm` + lien vers `/login` |
-| `app/globals.css` | ✅ fait | Styles de base (design) pour `input`/`label`/`button`/`h1`/`a`, variables de couleur clair/sombre |
+| `app/ui/auth/form-field.tsx` | ✅ fait | Composant réutilisable, affiche plusieurs erreurs par champ. Depuis le 2026-08-21, rendu avec les classes `.field`/`.input`/`.field-error` du design system (voir `docs/design/`). |
+| `app/ui/auth/login-form.tsx` | ✅ fait | Utilise `FormField` pour phoneNumber/password + bouton `.btn.btn-primary.btn-block`. |
+| `app/ui/auth/signup-form.tsx` | ✅ fait | Utilise `FormField` pour les 5 champs + texte d'aide mot de passe et mention CGU (`.text-muted`). |
+| `app/(auth)/layout.tsx` | ✅ fait | Carte centrée, tokens du design system (`--color-neutral-100`, `--radius-lg`, `--shadow-md`). |
+| `app/(auth)/login/page.tsx` | ✅ fait | Wordmark + titre/sous-titre du mockup "Connexion" + `LoginForm` + lien vers `/signup`. |
+| `app/(auth)/signup/page.tsx` | ✅ fait | Wordmark + titre/sous-titre du mockup "Inscription" + `SignupForm` + lien vers `/login`. |
+| `app/globals.css` | ✅ fait | Design system "Modernist" (voir `docs/design/`) : tokens (couleurs, Archivo, rayons adoucis 8/12/16px) + classes `.btn`/`.field`/`.input`/`.card`/`.tag`/`.wordmark`. Tailwind conservé pour les utilitaires de mise en page. |
 | `app/lib/jwt.ts` | ✅ fait | `decodeJwt` toujours utilisé par `session.ts` (calcul d'expiration du cookie). N'est plus utilisé par `dal.ts` depuis que `verifySession()` appelle `/auth/me` directement. |
 | `app/lib/api-errors.ts` | ✅ fait | `groupFieldErrors(apiResponse: ApiErrorResponse)` regroupe `fieldErrors` par `field` en `Record<string, string[]>` (plusieurs messages possibles pour un même champ). Utilisé par `auth.ts` pour construire `AuthFormState.errors`. |
 | `app/actions/auth.ts` | ✅ fait | `login()`/`signup()` : validation Zod propre à chacun, puis délégation à une fonction privée commune `authenticateAndRedirect(url, body)` (fetch, mapping d'erreur via `ApiErrorResponse`/`groupFieldErrors`, vérification du `token`, `createSession()`, `redirect('/dashboard')`) — tous les `TODO(review-1/3/4)` et `TODO(map-errors)` sont résolus, `TODO(review-2)` (factorisation) traité par ce helper. `logout()` : appelle `POST /auth/logout` seulement si un `token` existe (`catch` silencieux si le backend est injoignable), puis `deleteSession()` + `redirect('/login')` dans tous les cas — `TODO(call-logout)` résolu. |
