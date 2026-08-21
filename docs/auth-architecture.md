@@ -22,26 +22,43 @@ lieux écrit quelque part plutôt que dans la tête de quelqu'un).
 
 | Fichier | Statut | Où j'en suis exactement |
 |---|---|---|
-| `app/lib/definitions.ts` | ✅ fait | `LoginFormSchema`/`SignupFormSchema`/`AuthFormState` écrits et corrigés (email optionnel, firstname/lastname `.trim().min(1)`) |
-| `app/ui/auth/form-field.tsx` | ✅ fait | Composant réutilisable extrait pour éviter la duplication label+input+erreurs |
+| `app/lib/definitions.ts` | ✅ fait | Schémas écrits et fonctionnels. Le `TODO(normalize-phone)` a été retiré le 2026-08-18 : le backend normalise maintenant lui-même vers E.164 (voir "Limites connues actuelles du backend" plus bas), donc plus besoin d'un `.transform()` côté frontend pour garantir un compte unique. Ajouté le 2026-08-21 : `ApiErrorResponse`/`ApiFieldError`, le miroir TypeScript de l'`ErrorResponseDto` backend, utilisé par `app/lib/api-errors.ts` et `app/actions/auth.ts` pour typer la réponse d'erreur avant mapping. |
+| `app/ui/auth/form-field.tsx` | ✅ fait | Composant réutilisable extrait pour éviter la duplication label+input+erreurs. Affiche déjà plusieurs erreurs par champ (tableau) — pas de changement à faire même une fois `fieldErrors` mappé. |
 | `app/ui/auth/login-form.tsx` | ✅ fait | Utilise `FormField` pour phoneNumber/password |
 | `app/ui/auth/signup-form.tsx` | ✅ fait | Utilise `FormField` pour les 5 champs |
 | `app/(auth)/layout.tsx` | ✅ fait | Carte centrée (design) |
 | `app/(auth)/login/page.tsx` | ✅ fait | Titre + `LoginForm` + lien vers `/signup` |
 | `app/(auth)/signup/page.tsx` | ✅ fait | Titre + `SignupForm` + lien vers `/login` |
 | `app/globals.css` | ✅ fait | Styles de base (design) pour `input`/`label`/`button`/`h1`/`a`, variables de couleur clair/sombre |
-| `app/lib/jwt.ts` | ✅ fait | Infra fournie telle quelle (`decodeJwt`), rien à écrire |
-| `app/actions/auth.ts` | 🚧 en cours | `login()` : TODO(1) fait (validation Zod) — **reste TODO(2)/(3)/(4)** (appel API, session, redirect). `signup()` : rien fait, **TODO(1)/(2)/(3)**. `logout()` déjà complet. |
-| `app/lib/session.ts` | ⬜ à faire | `getSession()`/`deleteSession()` déjà complets. **`createSession()` TODO(1)/(2) à écrire.** |
-| `app/lib/dal.ts` | ⬜ à faire | **`verifySession()` TODO(1)/(2) à écrire.** `getUser()` dépend de ce que `verifySession()` retournera. |
-| `proxy.ts` | ⬜ à faire | Listes de routes déjà faites. **TODO(1)/(2)/(3) à écrire** (lecture cookie + redirections). |
-| `app/dashboard/page.tsx` | ⬜ à faire | **TODO(1)/(2) à écrire** (appel `verifySession()`, affichage). TODO(3) (bouton logout) a déjà un exemple quasi complet en commentaire. |
+| `app/lib/jwt.ts` | ✅ fait | `decodeJwt` toujours utilisé par `session.ts` (calcul d'expiration du cookie). N'est plus utilisé par `dal.ts` depuis que `verifySession()` appelle `/auth/me` directement. |
+| `app/lib/api-errors.ts` | ✅ fait | `groupFieldErrors(apiResponse: ApiErrorResponse)` regroupe `fieldErrors` par `field` en `Record<string, string[]>` (plusieurs messages possibles pour un même champ). Utilisé par `auth.ts` pour construire `AuthFormState.errors`. |
+| `app/actions/auth.ts` | ✅ fait | `login()`/`signup()` : validation Zod propre à chacun, puis délégation à une fonction privée commune `authenticateAndRedirect(url, body)` (fetch, mapping d'erreur via `ApiErrorResponse`/`groupFieldErrors`, vérification du `token`, `createSession()`, `redirect('/dashboard')`) — tous les `TODO(review-1/3/4)` et `TODO(map-errors)` sont résolus, `TODO(review-2)` (factorisation) traité par ce helper. `logout()` : appelle `POST /auth/logout` seulement si un `token` existe (`catch` silencieux si le backend est injoignable), puis `deleteSession()` + `redirect('/login')` dans tous les cas — `TODO(call-logout)` résolu. |
+| `app/lib/session.ts` | ✅ fait | `createSession()`/`getSession()`/`deleteSession()` tous écrits et fonctionnels. `TODO(review-1)` restant = robustesse (try/catch si token malformé), pas bloquant. |
+| `app/lib/dal.ts` | 🚧 en cours — **cassé tel quel** | Bascule faite vers l'option A (`verifySession()` appelle `GET /auth/me`, `getUser()` délègue à `verifySession()`). **`TODO(1)/(2)` à écrire dans `verifySession()`** (le `fetch` + le `return` du `UserDto`) — sans ça, `verifySession()` ne retourne rien, donc rien qui dépend de `dal.ts` ne peut fonctionner pour l'instant. |
+| `proxy.ts` | ⬜ à faire | Listes de routes déjà faites. **TODO(1)/(2)/(3) à écrire** (lecture cookie + redirections) — indépendant du reste, peut être fait à n'importe quel moment. |
+| `app/dashboard/page.tsx` | ⬜ à faire | **TODO(1)/(2)/(3) à écrire** (appel `verifySession()`/`getUser()`, affichage du `UserDto`, bouton logout). Attend que `dal.ts` soit fonctionnel avant de pouvoir être testé. |
 
-**Prochaine étape concrète** : `app/actions/auth.ts`, `login()` TODO(2) — le premier
-appel `fetch()` du projet. Une fois `login()` entièrement écrite et testée dans le
-navigateur (formulaire → cookie posé → redirection), le reste (`signup()`, `session.ts`,
-`dal.ts`, `proxy.ts`, `dashboard/page.tsx`) réutilise les mêmes briques dans un ordre
-logique — voir "Ordre d'implémentation" plus bas.
+**Ordre retenu : d'abord les fichiers 🚧 en cours, puis les ⬜ à faire.**
+
+`app/actions/auth.ts` est maintenant ✅ fait (voir tableau ci-dessus) — reste :
+
+1. `app/lib/dal.ts` (🚧 en cours — cassé tel quel) — `TODO(1)`/`(2)` dans
+   `verifySession()`. Priorité : c'est le seul fichier actuellement **non
+   fonctionnel** (il ne retourne rien), et `getUser()`/`dashboard/page.tsx` en
+   dépendent directement.
+2. `proxy.ts` (⬜ à faire, jamais commencé) — `TODO(1)/(2)/(3)`.
+3. `app/dashboard/page.tsx` (⬜ à faire) — `TODO(1)/(2)/(3)`. En dernier : dépend de
+   `dal.ts` pour être réellement testable.
+
+Avant de commencer : `.env.local` a été créé à la racine avec
+`API_URL=http://localhost:8080` — lance ton backend Spring Boot en local pour pouvoir
+tester au fur et à mesure. Les contrats API utilisés dans les TODO ci-dessus (routes,
+formats d'erreur, `UserDto`) sont documentés plus bas dans ce même document (sections
+"Limites connues actuelles du backend" et "Le contrat d'erreur — référence complète").
+
+**Question encore ouverte, non bloquante** : `API_URL` change-t-elle entre dev et prod,
+ou reste-t-elle une constante fixe pour l'instant ? Pas de réponse vérifiée à ce jour —
+à traiter si/quand un vrai déploiement prod est mis en place.
 
 ## Le changement de mental model le plus important
 
@@ -99,8 +116,8 @@ Navigateur                Next.js (serveur)              Ton API Spring Boot
       v
                           app/dashboard/page.tsx (Server Component)
                           -> appelle verifySession() / getUser() (dal.ts)
-                          -> décode le JWT localement (PAS d'appel API : /auth/me
-                             n'existe pas encore côté backend, voir plus bas)
+                          -> GET /auth/me avec Authorization: Bearer <token>
+                             (vraie vérification serveur, voir section dal.ts)
 ```
 
 Deux vérifications distinctes, volontairement :
@@ -109,13 +126,13 @@ Deux vérifications distinctes, volontairement :
   liens que Next.js déclenche tout seul). Il ne doit jamais appeler ton API — juste
   regarder si le cookie existe, comme un filtre qui vérifie juste la présence d'un
   header `Authorization` sans valider le JWT en base.
-- **`dal.ts`** = l'endroit qui *devrait* jouer le rôle de
-  `AuthenticationManager`/`SecurityContext` que tu interroges réellement dans un
+- **`dal.ts`** = l'endroit qui joue le rôle de
+  `AuthenticationManager`/`SecurityContext` que tu interrogerais réellement dans un
   `@Service` — vérif solide, appelée seulement quand une page a vraiment besoin des
-  données utilisateur. **En l'état actuel du backend, il n'y a pas d'endpoint à
-  interroger** (pas de `/auth/me`), donc `dal.ts` ne peut que décoder le JWT localement.
-  Voir la section "Limites connues actuelles du backend" plus bas — c'est une dette
-  technique volontaire, pas l'architecture cible.
+  données utilisateur. `GET /auth/me` existe côté backend et renvoie le `UserDto`
+  complet : `verifySession()` doit l'appeler directement (voir `TODO(1)/(2)` et la
+  section dédiée plus bas) — ce n'est plus un décodage local du JWT, mais une vraie
+  vérification côté serveur.
 
 ## Tableau de correspondance rapide
 
@@ -133,19 +150,32 @@ Deux vérifications distinctes, volontairement :
 
 ## Limites connues actuelles du backend (à garder en tête)
 
-Ce squelette est écrit contre l'état **réel et actuel** de ton API, pas contre une
-version idéalisée. Ces points sont amenés à changer — quand ils changeront, reviens sur
-les fichiers concernés :
+Mis à jour le 2026-08-18, vérifié par les tests automatisés du backend
+(`AuthControllerTest`, `AuthServiceTest`, `GlobalExceptionHandlerTest` — suite verte),
+pas juste relu dans le code.
+
+### Résolu depuis la première version de ce doc
+
+| Ancienne limite | État actuel |
+|---|---|
+| Pas d'endpoint `/auth/me` | ✅ Existe, renvoie `UserDto { firstname, lastname, phoneNumber, email, roles }` |
+| Pas de route de logout exposée | ✅ `POST /auth/logout` existe, `Authorization: Bearer` uniquement, `204 No Content` |
+| Erreurs 401 à corps vide, pas de `@RestControllerAdvice` | ✅ Contrat unique `ErrorResponseDto` (`timestamp`, `status`, `error`, `message`, `path`, `fieldErrors[]`) sur toutes les routes d'auth — détail complet dans la section "Le contrat d'erreur" plus bas |
+| `phoneNumber` accepté sous 2 formats (local/E.164), jamais normalisé avant stockage/comparaison — un même numéro sous 2 formats = 2 comptes différents | ✅ `AuthService` normalise vers E.164 en interne (signup ET login) — un même numéro sous 2 formats désigne maintenant le même compte. `app/lib/definitions.ts` n'a donc plus besoin d'un `.transform()`, et le `TODO(normalize-phone)` a été retiré (2026-08-18) |
+| Email dupliqué au signup renvoie un `500` générique au lieu d'un `409` exploitable | ✅ `existsByEmailIgnoreCase` vérifié avant l'insertion (insensible à la casse) → `409 Conflict`, même contrat d'erreur que pour le téléphone |
+| Contraintes backend sur `password` inconnues (le frontend impose 8–100 caractères, sans contrainte de complexité, sans confirmation que le backend correspond) | ✅ Confirmé dans `LoginRequestDto`/`SignupRequestDto` : `@Size(min = 8, max = 100)`, aucune contrainte de complexité additionnelle — identique au frontend, rien à ajuster |
+| Forme JSON exacte de `roles` et valeurs possibles de l'enum `Role` inconnues | ✅ Confirmé (`Role.java`) : enum à 3 valeurs `CUSTOMER`, `PRO`, `ADMIN`, sérialisées telles quelles dans un tableau (ex. `["CUSTOMER"]`) — pas de préfixe `ROLE_` |
+
+### Toujours vrai / nouveau
 
 | Limite actuelle | Impact sur le frontend | Fichier concerné |
 |---|---|---|
-| Pas d'endpoint `/auth/me` | `dal.ts` décode le JWT localement au lieu d'appeler l'API pour vérifier le token | `app/lib/dal.ts`, `app/lib/jwt.ts` |
-| Pas de route de logout exposée (la blacklist existe dans `AuthService` mais `AuthController` ne l'expose pas) | `logout()` supprime juste le cookie local, le token reste valide côté backend jusqu'à expiration | `app/actions/auth.ts` |
-| Toutes les erreurs renvoient 401 avec un corps vide (bug confirmé, en cours de correction) | Message d'erreur générique uniquement, pas de distinction "mauvais mot de passe" vs "téléphone déjà pris" | `app/actions/auth.ts` |
-| Pas de `@RestControllerAdvice` (conséquence du point précédent) | Pas de mapping d'erreurs par champ à écrire pour l'instant | `app/actions/auth.ts` |
-| `jwt.expiration` = 5 minutes (valeur de dev) | Ne code aucune hypothèse UX sur cette durée précise (ex: "le token dure 5 min donc..."), décode toujours le vrai `exp` | `app/lib/session.ts` |
+| `fieldErrors` peut contenir plusieurs entrées pour le même `field` (plusieurs contraintes violées) | Grouper par `field` en tableau, pas écraser — `AuthFormState.errors` est déjà typé `string[]` par champ, `FormField` affiche déjà chaque message | `app/actions/auth.ts`, `app/lib/definitions.ts` |
+| `jwt.expiration` = 1 heure, une seule valeur pour tous les environnements (pas de config prod séparée) | Ne code aucune hypothèse UX sur cette durée précise, décode toujours le vrai `exp` | `app/lib/session.ts` |
 | Pas de refresh token | Pas de `updateSession()` à écrire pour ce MVP | `app/lib/session.ts` |
-| CORS permissif (`*`) en dev, à resserrer avant prod | Un appel direct depuis le navigateur *fonctionnerait* en dev — ne t'y fie pas, respecte quand même la règle "jamais de fetch API depuis un Client Component" | `proxy.ts` / architecture générale |
+| Pas de rate limiting sur `/auth/me`, ni sur aucune route d'ailleurs | Aucune contrainte technique n'empêche `verifySession()` de l'appeler à chaque visite de page protégée (option A retenue, voir tableau de statut plus haut) | `app/lib/dal.ts` |
+| `GET /auth/me` et le `subject` du JWT renvoient toujours `phoneNumber` au format E.164, même si l'utilisateur a tapé le format local | Si `phoneNumber` est affiché dans l'UI (`UserDto`), attends-toi à ce format, pas au format tapé par l'utilisateur | `app/dashboard/page.tsx` (à écrire) |
+| CORS **supprimé intentionnellement et de façon définitive** côté backend (bean, config, propriété — tout retiré, pas juste laissé permissif) | Sans objet pour ce projet — le navigateur ne parle jamais directement à Spring Boot. C'est un garde-fou volontaire : si un jour du code frontend appelait l'API directement depuis le navigateur par erreur, l'absence de CORS fait échouer la requête au lieu de la laisser passer silencieusement (voir section CORS plus bas) | — |
 
 ## Spécificités de l'intégration avec ton API Spring Boot
 
@@ -185,12 +215,11 @@ requête, pas de session serveur) : chaque appel à une route protégée doit po
 token dans le header `Authorization: Bearer <token>`, sinon Spring Security le traite
 comme anonyme.
 
-Concrètement, **aujourd'hui** ça ne concerne encore aucun appel dans ce squelette,
-puisque `/auth/login` et `/auth/signup` ne nécessitent pas d'être déjà authentifié, et
-qu'il n'existe pas encore de route protégée à appeler depuis le frontend (pas de
-`/auth/me`). Retiens le pattern pour plus tard, dès que tu consommeras une route
-protégée (ex: `/users/me`, ou n'importe quelle donnée métier) depuis `dal.ts` ou une
-autre Server Action :
+Concrètement, ça ne concerne encore aucun appel *écrit* dans ce squelette (le fetch de
+`GET /auth/me` reste à écrire dans `dal.ts`, `TODO(1)`), mais c'est le premier endroit où
+tu vas appliquer ce pattern. Retiens-le aussi pour plus tard, pour toute autre route
+protégée (ex: `/users/me`, ou n'importe quelle donnée métier) appelée depuis `dal.ts` ou
+une autre Server Action :
 
 ```ts
 const token = await getSession()
@@ -205,42 +234,59 @@ sous cette forme) : c'est un simple coffre-fort où Next.js range le JWT entre d
 requêtes du navigateur. C'est Next.js qui, à chaque fois qu'il a besoin de parler à
 Spring Boot, ressort ce token du cookie et le pose dans le header `Authorization`.
 
-### La forme des erreurs — actuellement cassée, ne code pas contre
+### Le contrat d'erreur — référence complète
 
-En théorie, quand `@Valid` échoue sur un `@RequestBody` côté Spring
-(`MethodArgumentNotValidException`), un `@RestControllerAdvice` renverrait quelque chose
-comme :
+Vérifié par les tests automatisés du backend (`AuthControllerTest`, `AuthServiceTest`,
+`GlobalExceptionHandlerTest` — suite verte), pas juste relu dans le code. Forme unique
+pour **toute** erreur (`ErrorResponseDto`), produite par un `@RestControllerAdvice`
+(`GlobalExceptionHandler`) :
 
 ```json
 {
-  "status": 400,
-  "errors": [
-    { "field": "email", "message": "must be a well-formed email address" },
-    { "field": "password", "message": "size must be between 8 and 2147483647" }
-  ]
+  "timestamp": "2026-08-18T13:26:44.723Z",
+  "status": 401,
+  "error": "Unauthorized",
+  "message": "Invalid credentials",
+  "path": "/auth/login",
+  "fieldErrors": []
 }
 ```
 
-**Mais ce n'est pas ce que fait le backend aujourd'hui.** Vérifié par curl : login
-invalide, téléphone déjà pris au signup, et erreurs de validation renvoient tous
-actuellement un **401 avec un corps vide** — bug confirmé côté backend, en cours de
-correction, sans `@RestControllerAdvice` en place pour l'instant.
+`fieldErrors` n'est peuplé (un objet `{ field, message }` par contrainte violée, peut
+contenir plusieurs entrées pour le même `field`) que pour un échec de validation
+`@Valid`. Les noms dans `field` correspondent aux clés attendues côté frontend
+(`phoneNumber`, `password`, `firstname`, `lastname`, `email` — voir
+`app/lib/definitions.ts`) : pas de mapping de nom à faire.
 
-**Conséquence pour `app/actions/auth.ts`** : n'écris pas de mapping fin par champ tant
-que ce n'est pas corrigé. Contente-toi de :
+| Cas | Status | `message` | `fieldErrors` |
+|---|---|---|---|
+| `POST /auth/login` — mauvais téléphone/mot de passe | `401` | `"Invalid credentials"` | `[]` |
+| `POST /auth/login` ou `/auth/signup` — champ invalide (`@NotBlank`, `@Size`, format téléphone/email) | `400` | `"Validation failed"` | rempli, un par champ/contrainte |
+| `POST /auth/signup` — téléphone déjà enregistré | `409` | `"An account with this phone number already exists"` | `[]` |
+| `POST /auth/signup` — email déjà enregistré | `409` | `"An account with this email already exists"` | `[]` |
+| `POST /auth/logout` ou `GET /auth/me` — token absent/invalide/expiré/révoqué | `401` | message précis selon le cas (ex. `"Expired or invalid JWT token"`) | `[]` |
+| `GET /auth/me` — compte supprimé après émission du token | `404` | `"user not found"` | `[]` |
+| JSON malformé dans le corps de la requête | `400` | `"JSON parsing failed"` | `[]` |
+| Erreur interne imprévue | `500` | `"An unexpected error occurred"` (jamais le détail réel, volontairement) | `[]` |
 
-```ts
-if (!res.ok) {
-  return { message: 'Numéro ou mot de passe invalide.' }
-}
-```
+Messages de validation par défaut à anticiper dans le mapping (`fieldErrors[].message`) :
+- `@NotBlank` → `"must not be blank"`
+- `@Size(min=8, max=100)` sur `password` → `"size must be between 8 and 100"`
+- `@IvoryCoastPhone` → `"Numéro de téléphone ivoirien invalide (ex : +2250701020304 ou 0701020304)"`
+- `@StrictEmail` → `"The email address format is invalid."` ou `"Please provide a valid email address."` selon la contrainte qui échoue
 
-Une fois le fix confirmé côté backend (codes cibles : 401 identifiants invalides, 409
-téléphone déjà pris, 400 validation), reviens ici pour transformer la réponse au format
-attendu par `AuthFormState` (`{ errors: { phoneNumber?: string[], ... } }`), un peu comme
-un mapper entre un `ErrorResponse` Spring et un DTO destiné au frontend. Vérifie la forme
-réelle (Postman, ou `console.log` temporaire dans la Server Action) avant d'écrire ce
-mapping — ne le devine pas à l'avance.
+**Conséquence pour `app/actions/auth.ts`** (`TODO(map-errors)`) : écris maintenant le
+mapping fin par champ — la forme ci-dessus est stable et testée :
+1. `const body = await res.json()` (uniquement dans le cas d'erreur).
+2. Groupe `body.fieldErrors` par `field` en `Record<string, string[]>` — un même champ
+   peut apparaître plusieurs fois, pousse chaque `message` dans le tableau du bon champ.
+   `AuthFormState.errors` (`definitions.ts`) attend déjà `string[]` par champ, donc pas
+   de fusion à inventer, juste grouper.
+3. Retourne `{ errors: <ce mapping>, message: body.message }` — `message` sert de repli
+   quand `fieldErrors` est vide (401 identifiants invalides, 409 doublon...).
+
+`signup()` a besoin de EXACTEMENT la même logique de mapping que `login()` — voir la
+remarque sur la factorisation possible (`TODO(review-2)` dans `app/actions/auth.ts`).
 
 ## Ordre d'implémentation et rôle de chaque fichier
 
@@ -375,14 +421,17 @@ relire le cookie et refaire la vérification à chaque endroit qui en a besoin �
 centraliserais la lecture du `SecurityContextHolder` plutôt que de la disperser dans
 chaque controller.
 
-**Cible architecturale** (ce que ferait `verifySession()` *si* `/auth/me` existait) :
-rappeler l'API à chaque vérification pour confirmer que le token est toujours valide
-côté serveur (pas expiré, pas blacklisté après un logout). **Réalité actuelle** : ce
-endpoint n'existe pas, donc `verifySession()` décode le JWT localement via
-`app/lib/jwt.ts` (`decodeJwt`) et vérifie juste que `exp` n'est pas dépassé — une
-vérification purement locale, sans confirmation serveur. Le jour où `/auth/me` (ou
-équivalent) existe, remplace ce décodage par un vrai `fetch` — voir "Limites connues
-actuelles du backend" plus haut.
+`GET /auth/me` existe côté backend (`Authorization: Bearer <token>` → `UserDto
+{ firstname, lastname, phoneNumber, email, roles }`, `roles` sérialisé comme un tableau
+de noms bruts de l'enum, ex. `["CUSTOMER"]`, valeurs possibles `CUSTOMER`/`PRO`/`ADMIN`)
+— **option A retenue** : `verifySession()` doit appeler CET endpoint à chaque fois
+(`TODO(1)/(2)`, encore à écrire), plutôt que de se contenter d'un décodage local du JWT.
+C'est une vraie vérification côté serveur : un token expiré, corrompu, ou blacklisté
+après un logout (le décodage local ne pouvait détecter aucun des trois cas) est rejeté
+par le backend lui-même. `app/lib/jwt.ts` (décodage local) n'est donc plus utilisé ici —
+il reste utile uniquement à `session.ts` (calcul de la date d'expiration du cookie). Pas
+de rate limiting côté backend sur cette route, donc pas de coût réseau à anticiper même
+si `verifySession()` est appelée à chaque visite de page protégée.
 
 `cache()` (une fonction de React, pas de Next.js) mémorise le résultat **pour la durée
 d'un seul rendu de page** : si plusieurs composants de la même page appellent
