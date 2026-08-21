@@ -36,15 +36,12 @@ lieux écrit quelque part plutôt que dans la tête de quelqu'un).
 | `app/lib/session.ts` | ✅ fait | `createSession()`/`getSession()`/`deleteSession()` tous écrits et fonctionnels. `TODO(review-1)` restant = robustesse (try/catch si token malformé), pas bloquant. |
 | `app/lib/dal.ts` | ✅ fait | `verifySession()` appelle `GET /auth/me` (`try/catch` + `!res.ok` → `redirect('/login')`) et retourne le `UserDto` parsé. `getUser()` délègue à `verifySession()`. |
 | `proxy.ts` | ✅ fait | Lit `req.cookies.get('session')` : redirige vers `/login` si route protégée sans cookie, vers `/dashboard` si route publique avec cookie. `'/'` est dans `publicRoutes` — à exclure de cette redirection le jour où `/` devient une vraie page d'accueil consultable même connecté (`app/page.tsx` est encore le placeholder par défaut de Next.js). |
-| `app/dashboard/page.tsx` | ⬜ à faire | **TODO(1)/(2)/(3) à écrire** (appel `verifySession()`/`getUser()`, affichage du `UserDto`, bouton logout). Attend que `dal.ts` soit fonctionnel avant de pouvoir être testé. |
+| `app/dashboard/page.tsx` | ✅ fait | `getUser()` (`dal.ts`) récupère le `UserDto`, affiché dans une `.card` (nom, téléphone, email si présent, `roles` en tags) sous un header avec le wordmark et le bouton logout (`<form action={logout}>`). Pas de contenu métier (agenda, revenus...) — ça n'existe pas encore côté backend. |
 
-**Ordre retenu : d'abord les fichiers 🚧 en cours, puis les ⬜ à faire.**
-
-`app/actions/auth.ts`, `app/lib/dal.ts` et `proxy.ts` sont maintenant ✅ faits (voir
-tableau ci-dessus) — reste :
-
-1. `app/dashboard/page.tsx` (⬜ à faire) — `TODO(1)/(2)/(3)`. Peut maintenant être
-   testé de bout en bout puisque `dal.ts` et `proxy.ts` sont fonctionnels.
+**Squelette initial terminé** : tous les fichiers du tableau ci-dessus sont ✅ faits,
+y compris `app/dashboard/page.tsx`. Design "Modernist" appliqué aux pages d'auth et au
+dashboard — voir `docs/design/`. Prochaines étapes non listées ici : tout ce qui dépasse
+ce squelette d'authentification (réservations, profils pro, etc.).
 
 Avant de commencer : `.env.local` a été créé à la racine avec
 `API_URL=http://localhost:8080` — lance ton backend Spring Boot en local pour pouvoir
