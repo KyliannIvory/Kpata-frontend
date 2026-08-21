@@ -1,53 +1,55 @@
-import { verifySession, getUser } from '@/app/lib/dal'
+import { getUser } from '@/app/lib/dal'
 import { logout } from '@/app/actions/auth'
 
-// Page volontairement minimale : juste de quoi vérifier que le flow complet marche
-// (login/signup -> cookie -> redirect -> cette page protégée -> logout).
-// Server Component par défaut : pas besoin de 'use client' ici, il n'y a aucune
-// interactivité propre à cette page (le bouton logout appelle une Server Action
-// directement via <form>, voir TODO(3)).
-
-// ────────────────────────────────────────────────────────────────────────────
-// Notions JS/TS utilisées ici :
-//
-// async function DashboardPage()
-//   Un Server Component PEUT être une fonction `async` qui fait des `await` dans son
-//   corps directement (contrairement à un Client Component, où `useState`/hooks ne
-//   supportent pas ça — c'est pour ça que useActionState existe côté client). Ici pas
-//   besoin de hook : le rendu attend juste que verifySession() se résolve avant de
-//   produire le HTML, un peu comme un contrôleur Spring MVC qui attend le résultat
-//   d'un `@Service` avant de choisir la vue à retourner.
-//
-// { phoneNumber, roles } = await verifySession()
-//   Déstructuration directe du résultat, comme `{ token }` dans auth.ts.
-
 export default async function DashboardPage() {
-  // TODO(1): appelle verifySession() (app/lib/dal.ts) et récupère son résultat.
-  //   const { phoneNumber, roles } = await verifySession()
-  // (adapte les noms de propriétés à ce que tu as réellement retourné au TODO(2) de
-  // dal.ts). Si le cookie est absent/expiré, verifySession() redirige déjà vers /login
-  // toute seule (voir le redirect() dans dal.ts) — pas besoin de re-vérifier ici, cette
-  // ligne ne "continue" que si l'utilisateur est bien authentifié.
-
-  // TODO(2): affiche ces infos dans le JSX ci-dessous (remplace le <p>Connecté.</p>).
-  //   <p>Connecté en tant que {phoneNumber}</p>
-  // Rappel : tant que /auth/me n'existe pas côté backend, ce sont uniquement les infos
-  // qu'on a pu décoder localement depuis le JWT (voir app/lib/jwt.ts et dal.ts) — pas
-  // de prénom/nom/email disponibles ici.
+  const { firstname, lastname, phoneNumber, email, roles } = await getUser()
 
   return (
-    <div>
-      {/* TODO(2) : remplace ceci par les vraies infos utilisateur */}
-      <p>Connecté.</p>
+    <div className="min-h-full flex flex-col">
+      <header className="flex items-center justify-between p-4 border-b-2 border-[var(--color-divider)]">
+        <div className="wordmark">
+          <span className="mark" />
+          kpata
+        </div>
 
-      {/* TODO(3): bouton logout.
-          <form action={logout}>
-            <button type="submit">Se déconnecter</button>
-          </form>
-          Comme pour les formulaires login/signup, <form action={...}> invoque
-          directement la Server Action `logout` — pas besoin de useActionState ici
-          puisqu'il n'y a ni champ à valider ni erreur à afficher.
-      */}
+        <form action={logout}>
+          <button type="submit" className="btn btn-secondary">Se déconnecter</button>
+        </form>
+      </header>
+
+      <main className="flex-1 w-full max-w-2xl mx-auto p-8 flex flex-col gap-4">
+        <div>
+          <h2>Bonjour, {firstname}</h2>
+          <p className="opacity-70">Content de vous revoir sur kpata.</p>
+        </div>
+
+        <div className="card">
+          <h4>Vos informations</h4>
+
+          <div className="flex justify-between">
+            <span className="text-muted">Nom complet</span>
+            <span>{firstname} {lastname}</span>
+          </div>
+
+          <div className="flex justify-between">
+            <span className="text-muted">Téléphone</span>
+            <span>{phoneNumber}</span>
+          </div>
+
+          {email && (
+            <div className="flex justify-between">
+              <span className="text-muted">Email</span>
+              <span>{email}</span>
+            </div>
+          )}
+
+          <div className="flex gap-2">
+            {roles.map((role) => (
+              <span key={role} className="tag tag-accent">{role}</span>
+            ))}
+          </div>
+        </div>
+      </main>
     </div>
   )
 }
