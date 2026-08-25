@@ -7,10 +7,14 @@ import { z } from 'zod'
 import {groupFieldErrors} from "@/app/lib/api-errors";
 
 
-const API_URL = process.env.API_URL;
+function getApiUrl(): string {
+  const url = process.env.API_URL;
 
-if (!API_URL) {
-  throw new Error('API_URL manquante: vérifier le fichier .env')
+  if (!url) {
+    throw new Error('API_URL manquante: vérifier le fichier .env')
+  }
+
+  return url;
 }
 
 async function authenticateAndRedirect(
@@ -63,7 +67,7 @@ export async function login(
     }
   }
 
-  return authenticateAndRedirect(`${API_URL}/auth/login`, validatedFields.data)
+  return authenticateAndRedirect(`${getApiUrl()}/auth/login`, validatedFields.data)
 }
 
 export async function signup(
@@ -85,7 +89,7 @@ export async function signup(
     }
   }
 
-  return authenticateAndRedirect(`${API_URL}/auth/signup`, validatedFields.data)
+  return authenticateAndRedirect(`${getApiUrl()}/auth/signup`, validatedFields.data)
 }
 
 export async function logout() {
@@ -94,7 +98,7 @@ export async function logout() {
 
   if (token) {
     try {
-      await fetch(`${API_URL}/auth/logout`, {
+      await fetch(`${getApiUrl()}/auth/logout`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });
