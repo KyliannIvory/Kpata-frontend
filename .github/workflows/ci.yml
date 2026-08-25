@@ -1,0 +1,35 @@
+name: ci.yml
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    name: eslint
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: setup
+        uses: ./.github/actions/setup
+      - name: execution of the lint command
+        run: npm run lint
+        shell: bash
+
+  build:
+    name: builder
+    runs-on: ubuntu-22.04
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: setup
+        uses: ./.github/actions/setup
+      - name: build
+        run: npm run build
+        shell: bash
